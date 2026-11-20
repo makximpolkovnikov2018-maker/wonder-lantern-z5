@@ -11,7 +11,7 @@
 - 48 000 Гц
 - 16 бит
 - 2 канала, стерео
-- полезная аудиодатa не меньше 2000 байт
+- не менее 2 000 байт аудиоданных
 - максимум 240 KiB аудиоданных
 - максимальная длительность примерно 1,28 секунды
 
@@ -33,27 +33,25 @@
 ffmpeg -version
 ```
 
-Если команда не найдена, установите FFmpeg для Windows и добавьте его папку `bin` в системную переменную `PATH`. После изменения `PATH` откройте новое окно PowerShell.
+Если команда не найдена, установите FFmpeg для Windows и добавьте его папку `bin` в `PATH`. После изменения `PATH` откройте новое окно PowerShell. Если FFmpeg уже скачан, можно указать полный путь к нему для текущего окна PowerShell.
+
+```powershell
+$env:FFMPEG = 'C:\ffmpeg\bin\ffmpeg.exe'
+```
 
 ## Конвертация MP3 из командной строки
 
 Перейдите в корень репозитория и выполните:
 
 ```powershell
-python .\tools\make_snd_wav.py .\my-sound.mp3 --out .\build\sound-1
+python .\tools\make_snd_wav.py .\my-sound.mp3 --slot 1 --out .\build\sound-1
 ```
 
-Результат:
+Команда создаст два файла. Для повторного запуска укажите новую выходную папку.
 
 ```text
-build/sound-1/SND.WAV
+build/sound-1/1.WAV
 build/sound-1/manifest.json
-```
-
-Переименуйте `SND.WAV` в нужный номер:
-
-```powershell
-Rename-Item .\build\sound-1\SND.WAV 1.WAV
 ```
 
 Затем скопируйте `1.WAV` на карту:
