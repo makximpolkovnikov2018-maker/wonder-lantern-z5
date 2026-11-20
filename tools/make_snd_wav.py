@@ -11,12 +11,16 @@ import argparse
 import hashlib
 import json
 import math
+import os
+import shutil
 import struct
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 
 ROOT = Path.cwd()
-RATE, CHANNELS, CAP = 48000, 2, 256 * 1024
+RATE, CHANNELS, CAP = 48000, 2, 240 * 1024
 MIN_BYTES = 2000
 
 
@@ -111,8 +115,8 @@ def canonical(pcm):
 
 def module_check(data):
     """Same acceptance as SDK z5_wav_load + bootsound: RIFF, length at 0x28, >= 2000, <= cap."""
-    if data[:4] != b'RIFF':
-        return 'not RIFF'
+    if len(data) < 44 or data[:4] != b'RIFF':
+        return 'missing the 44-byte RIFF header'
     dlen = struct.unpack_from('<I', data, 0x28)[0]
     if dlen == 0 or dlen > CAP:
         dlen = CAP
@@ -145,26 +149,54 @@ def convert(data, gain_db=0.0):
     return out, info
 
 
+def read_input(path):
+    if path.suffix.lower() != '.mp3':
+        return path.read_bytes(), None
+    ffmpeg = shutil.which('ffmpeg') or shutil.which('ffmpeg.exe')
+    if not ffmpeg:
+        configured = Path(os.environ.get('FFMPEG', ''))
+        ffmpeg = str(configured) if configured.is_file() else None
+    if not ffmpeg:
+        raise ValueError('MP3 input requires ffmpeg. Install ffmpeg, add it to PATH, or set FFMPEG to its full path.')
+    with tempfile.TemporaryDirectory(prefix='z5-mp3-') as temp:
+        wav = Path(temp) / 'decoded.wav'
+        command = [ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-i', str(path),
+                   '-vn', '-ac', str(CHANNELS), '-ar', str(RATE), '-c:a', 'pcm_s16le', str(wav)]
+        try:
+            subprocess.run(command, check=True)
+        except subprocess.CalledProcessError as exc:
+            raise ValueError(f'ffmpeg could not decode the MP3 file (exit code {exc.returncode})') from exc
+        return wav.read_bytes(), 'ffmpeg'
+
+
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('input', type=Path)
+    p = argparse.ArgumentParser(description='Convert MP3 or WAV to Nikon Z 5 SHUTTER audio (max 1.28 s).')
+    p.add_argument('input', type=Path, help='input WAV or MP3 file')
+    p.add_argument('--slot', type=int, choices=range(1, 6), help='save as 1.WAV through 5.WAV instead of SND.WAV')
     p.add_argument('--gain-db', type=float, default=0.0, help='optional gain, e.g. -3')
     p.add_argument('--out', type=Path, help='new directory for the result (default: output/snd-<time>)')
     a = p.parse_args()
-    source = a.input.read_bytes()
-    out_data, info = convert(source, a.gain_db)
+    source_path = a.input.resolve()
+    if not source_path.is_file():
+        p.error(f'input file not found: {source_path}')
+    source = source_path.read_bytes()
+    decoded, decoder = read_input(source_path)
+    out_data, info = convert(decoded, a.gain_db)
+    if decoder:
+        info['decoder'] = decoder
     problem = module_check(out_data)
     if problem:
         p.error('converted file fails the module check: ' + problem)
     out = (a.out or ROOT / f'output/snd-{time.strftime("%Y%m%d-%H%M%S")}').resolve()
     out.mkdir(parents=True, exist_ok=False)
-    (out / 'SND.WAV').write_bytes(out_data)
+    output_name = f'{a.slot}.WAV' if a.slot else 'SND.WAV'
+    (out / output_name).write_bytes(out_data)
     info.update(input=str(a.input), input_sha256=hashlib.sha256(source).hexdigest(),
                 input_module_check=module_check(source) or 'ok',
                 output_sha256=hashlib.sha256(out_data).hexdigest(), gain_db=a.gain_db, camera_verified=False)
     (out / 'manifest.json').write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding='utf-8')
     print(json.dumps(info, indent=2, ensure_ascii=False))
-    print(out / 'SND.WAV')
+    print(out / output_name)
 
 
 if __name__ == '__main__':

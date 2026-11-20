@@ -88,15 +88,15 @@ Files created by the camera do not persist, so `MENU.DAT` and the 20 record file
 
 ### 5. Sound format
 
-Custom sounds must be named `1.WAV` to `5.WAV`, and you do not need all five. Use a WAV with a standard 44-byte header: uncompressed PCM, 48 kHz, 16-bit, stereo, at least 2000 bytes. Up to about 1.28 seconds is read. The sound should start at the very beginning of the file, because leading silence makes the shutter sound late.
+Custom sounds must be named `1.WAV` to `5.WAV`, and you do not need all five. The camera reads uncompressed PCM, 48 kHz, 16-bit, stereo audio with a standard 44-byte WAV header. The minimum data payload is 2000 bytes. The module reads up to 240 KiB of audio data, which is about 1.28 seconds at this format. The converter trims longer files and applies a short fade-out. Start the sound at the beginning of the file because leading silence makes the shutter sound late.
 
-To convert a file (requires Python 3):
+The converter accepts WAV and MP3. MP3 input requires `ffmpeg` installed and available in `PATH`.
 
 ```bash
-python tools/make_snd_wav.py your_sound.wav --out converted
+python tools/make_snd_wav.py your_sound.mp3 --out converted
 ```
 
-The result is `SND.WAV` in that folder. Rename it and put it in `SHUTTER`.
+It creates `SND.WAV` and `manifest.json` in the output folder. Rename `SND.WAV` to `1.WAV`, `2.WAV`, `3.WAV`, `4.WAV` or `5.WAV`, then copy it to the card's `SHUTTER` folder. The converter produces 48 kHz, 16-bit, stereo PCM with a canonical 44-byte WAV header.
 
 ### 6. Menus
 
