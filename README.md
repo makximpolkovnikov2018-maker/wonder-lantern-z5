@@ -1,173 +1,177 @@
 # Z5 Extensions
 
-[English](README.en.md)
+[中文](README.md)
 
-尼康 Z 5（固件 C 1.50）的功能扩展。**本仓库不含任何尼康固件**：你需要自备官方更新文件，由 `patch.py` 在本机校验并生成刷机文件。
+Feature extensions for the Nikon Z 5, firmware C 1.50. **This repository contains no Nikon firmware.** You supply the official update file, and `patch.py` verifies it and builds the update on your own computer.
 
-与尼康公司无关，也未获其授权或支持。**刷入修改过的固件有使相机损坏的风险，一切后果自负。** 目前只在作者的一台相机上测试过。
+This project is not affiliated with, authorised by, or supported by Nikon. **Flashing modified firmware can damage your camera. Use it at your own risk.** So far it has been tested on only one camera, the author's.
 
-## 功能
+## Features
 
-| 功能 | 说明 | 实机验证 |
+| Feature | Description | Camera tested |
 | --- | --- | --- |
-| 自定义快门声音 | 静音拍摄时播放卡上的 WAV，最多 5 个音效，可调开关、类型、音量；机械快门不变 | 通过 |
-| 简体中文菜单 | 设定菜单“快门声音”页面 | 通过 |
-| 直方图水平仪同框 | 水平仪页同时显示直方图 | 通过（照片模式、背屏） |
-| 取景网格样式 | 自定义设定 d8 增加 3×3 和 2×2，原厂“开启”仍是 4×4 | 通过（照片模式、背屏） |
-| 照片高光显示（斑马纹） | 把原厂视频的高光显示用到照片取景，设定菜单单独开关 | 通过（照片模式、背屏） |
-| 待机唤醒修复 | 熄屏后立刻唤醒时功能不丢失 | 通过 |
-| 竖拍显示（测试版） | 竖着拿相机时取景信息、i 菜单、设置页转为竖版 | 作者实测，仍在测试 |
-| 竖拍触控（测试版） | 竖拍时触摸按竖版位置操作，含拖动选项条；可关闭 | 作者实测“差不多可以用” |
-| 焦距显示 | 所有 CPU 镜头都显示焦距（原厂只限电动变焦），可关闭 | 通过 |
-| 电量百分比 | 电池图标里显示剩余电量百分比，可关闭 | 通过 |
-| 扩展功能菜单 | 所有开关集中在设定菜单最后一行“扩展功能” | 通过 |
-| 自定义 DISP | DISP0～DISP3 可分别设置水平线、直方图和详细信息，后屏和取景器分别记忆页号 | 用户反馈 A39 测试正常 |
-| B 门定时 | 在照片拍摄菜单设时、分、秒，按「开始」退出菜单，约 1.5 秒后曝光 | A19 实机通过，用户反馈 A39 测试正常 |
-| 测试记录 | 出问题时一键保存记录（`Z5LOG` 文件夹），便于反馈 | 通过 |
-| 连拍提速（测试版） | 机械 233→约 195 ms/张（全画幅和 DX 镜头都已实测）；**静音目前没有明显提速**（约 380 ms/张，原厂 400，排查中）；**只适合 AF-S，AF-C 下也按 AF-S 工作，不适合追踪**；详见[说明](docs/BURST_SPEED.md) | 上游旧产物机械通过、静音未生效；本次组合待实机验证 |
+| Custom shutter sound | Plays a WAV from the card during silent photography, with up to 5 sounds and on/off, sound and volume settings. The mechanical shutter is unchanged | Yes |
+| Simplified Chinese menu | "Shutter sound" page in the Setup menu | Yes |
+| Histogram with level | Shows the histogram on the virtual horizon page | Yes (photo mode, rear monitor) |
+| Framing grid styles | Adds 3×3 and 2×2 to Custom Setting d8. The stock "On" remains 4×4 | Yes (photo mode, rear monitor) |
+| Photo highlight display (zebra) | Brings the stock movie highlight display to photo live view, with its own switch in the Setup menu | Yes (photo mode, rear monitor) |
+| Standby wake fix | Keeps the features when the camera wakes immediately after the display turns off | Yes |
+| Portrait UI (test) | Shooting display, i menu and setting pages turn upright when the camera is held vertically | Author's camera, still in testing |
+| Portrait touch (test) | Touch follows the portrait layout, including strip dragging; can be turned off | Author: "mostly usable" |
+| Focal length | Shown for every CPU lens (stock: power-zoom lenses only); can be turned off | Yes |
+| Battery percent | Remaining charge shown in the battery icon; can be turned off | Yes |
+| Extensions menu | All switches in one row, "Extensions", at the end of the Setup menu | Yes |
+| Custom DISP | Per-page level, histogram and details with separate LCD and EVF page memory | User reported A39 worked |
+| Timed Bulb | Set hours, minutes and seconds in the photo shooting menu. Start exits the menu and begins exposure about 1.5 seconds later. | A19 tested on camera. User reported A39 worked. |
+| Test records | One-press record of a problem (`Z5LOG` folder) for feedback | Yes |
+| Burst speed-up (test) | Mechanical 233 → ~195 ms/frame (camera-tested with FX and DX lenses). **Silent: no clear gain yet** (~380 ms/frame vs 400 stock; under investigation). **AF-S only: in AF-C focus also stays at the first frame, not for tracking.** Setup menu row "连拍提速" below the extension row, two switches (mechanical / electronic, default on); please switch "view all in continuous mode" off yourself. See [docs/BURST_SPEED.md](docs/BURST_SPEED.md) (Chinese) | Older upstream build: mechanical tested, silent ineffective; this combination awaits camera testing |
 
-取景器、视频模式下的新功能，以及最新版本的拔卡恢复，尚未单独确认。已完成和未来计划见 [PLAN.md](PLAN.md)，开发过程见 [docs/PROGRESS.md](docs/PROGRESS.md)。
+The new features have not been checked separately in the viewfinder or in movie mode, and restoring stock behaviour by removing the card has not been rechecked on the latest build. See [PLAN.md](PLAN.md) for completed and future work and [docs/PROGRESS.md](docs/PROGRESS.md) for development notes (both in Chinese).
 
-**当前版本 A39** 合并 A19 的 B 门定时和 PR #6 的自定义 DISP。卡上模块菜单固定为简体中文。自定义 DISP 开启后，可逐页设置水平线（关闭／原版／TypeA）、直方图和详细信息。关掉详细信息时隐藏白平衡图标，保留基础参数和电量。后屏保留 DISP4 熄屏档，取景器循环四个显示页。
+**A39** combines the A19 timed Bulb menu with Custom DISP from PR #6. Extension menus display in Simplified Chinese. Enable Custom DISP under Setup Menu → Extensions → Custom DISP. Each of the four pages has its own level, histogram and detail settings. The LCD keeps a display-off position, and the EVF cycles the four visible pages.
 
-竖拍仍为测试功能。待机唤醒后电池和焦距可能需要再半按快门才出现。竖拍 i 菜单和触控的覆盖范围见[竖拍显示说明](docs/PORTRAIT_UI.md)。绘制和持久化细节见[自定义 DISP 交接文档](docs/CUSTOM_DISP_HANDOFF.md)。用户已反馈 A39 测试正常，视频和各显示场景未逐项记录。
+The user reported that A39 worked in camera testing. Individual display scenarios and video were not reported separately. See the [portrait notes](docs/PORTRAIT_UI.md) and [Custom DISP handoff](docs/CUSTOM_DISP_HANDOFF.md).
 
-功能代码放在存储卡上的模块里。固件只增加很小的入口和判断；卡上没有模块时，网格、高光显示和同框都走原厂路径。改动只在 MAIN 模块内，不动引导区。
+## Windows tool (no installation)
 
-## Windows 免安装工具
+Download the Windows tool from the [A39 release](https://github.com/WonderLantern/wonder-lantern-z5/releases/tag/a39-20261117). It generates the firmware paired with A19 and the A39 card module from the official C 1.50 file. Existing tools can import Z5-update-a39-20261117.zip. The output includes Chinese instructions and the shutter sound converter.
 
-从 [A39 发布页](https://github.com/WonderLantern/wonder-lantern-z5/releases/tag/a39-20261117) 下载 `Z5Extensions.exe`，选择自备的原厂 `Z_5_0150.bin`，即可在电脑上生成 A19 配套固件和 A39 卡上模块。原有 Windows 工具可通过「导入版本包」使用 `Z5-update-a39-20261117.zip`。结果中包含中文说明和快门声音转换工具。首次生成需联网下载并校验解码器。
+## Usage
 
-## 使用
+**Already using the firmware paired with A19?** Back up the existing module and settings, then replace only Z5APP.BIN at the root of the card. Keep MENU.DAT and power-cycle the camera. To roll back, restore both backups. Custom DISP defaults to off when migrating from A19.
 
-**已经装好 A19 配套固件的用户**。关机后备份卡上的 `Z5APP.BIN` 和 `SHUTTER/MENU.DAT`，然后只替换卡根目录的 `Z5APP.BIN`，保留原设置和声音并重新上电。跳过固件更新步骤。回退时恢复这两份备份。自 A19 升级时，自定义 DISP 默认关闭。
+### 1. Prepare
 
-### 1. 准备
+- Python 3.10 or newer.
+- The Z 5 C 1.50 update `Z_5_0150.bin` from Nikon's website, with SHA-256
+  `efc0ce70dcafdd96c64e95d8d50f6b7f0509fc0c2840b28d12b6f9e4877ee776`.
 
-- Python 3.10 或更新版本。
-- 尼康官网下载的 Z 5 C 1.50 更新文件 `Z_5_0150.bin`，SHA-256 为
-  `efc0ce70dcafdd96c64e95d8d50f6b7f0509fc0c2840b28d12b6f9e4877ee776`。
+### 2. Build
 
-### 2. 生成文件
-
-下载本仓库后，在仓库目录运行：
+Download this repository and run this in its folder:
 
 ```bash
 python patch.py --source Z_5_0150.bin --output output
 ```
 
-工具首次运行时会从 [z5mod](https://github.com/youyli03/z5mod) 下载固定版本的解码文件并校验哈希，需要联网。生成结果必须与发布清单逐字节一致，否则不会写出文件。输出：
+The first run needs an internet connection: the tool downloads a fixed version of the decoder files from [z5mod](https://github.com/youyli03/z5mod) and checks their hashes. Nothing is written unless the result matches the release manifest byte for byte. Output:
 
 ```text
-output/EG165050.BIN              刷机文件
-output/card/Z5APP.BIN            卡上模块
-output/card/SHUTTER/MENU.DAT     设置文件，必须保留
-output/card/SHUTTER/1～5.WAV      默认测试音效（5 个）
-output/card/Z5LOG/DIAG01～20.BIN  20 个空的测试记录文件
+output/EG165050.BIN              firmware update
+output/card/Z5APP.BIN            card module
+output/card/SHUTTER/MENU.DAT     settings file, must stay on the card
+output/card/SHUTTER/1-5.WAV      default test sounds (five)
+output/card/Z5LOG/DIAG01-20.BIN  20 empty test-record files
 ```
 
-`EG165050.BIN` 的 SHA-256 应为 `bf821031e6d0b7d5f8762eba7178db94adda90f91c8d078985039f4f1cad558e`（第 108 组 + 连拍提速入口，A19 测试时使用的配套固件）。请勿分发这个文件。
+The SHA-256 of `EG165050.BIN` should be `bf821031e6d0b7d5f8762eba7178db94adda90f91c8d078985039f4f1cad558e` (group 108 + burst speed-up entries). Do not redistribute this file.
 
-### 3. 刷机（只做一次）
+### 3. Flash (once)
 
-1. 电量充足，卡根目录只放 `EG165050.BIN`。
-2. 设定菜单 → 固件版本 → 更新，按屏幕提示完成。
-3. 关机，取下电池片刻再装回。
-4. 删除卡上的 `EG165050.BIN`。
+1. With a well-charged battery, put only `EG165050.BIN` in the root of the card.
+2. Go to Setup menu → Firmware version → Update and follow the on-screen prompts.
+3. Turn the camera off, remove the battery for a moment, and put it back.
+4. Delete `EG165050.BIN` from the card.
 
-### 4. 存储卡
+### 4. Memory card
 
-把 `output/card/` 里的内容复制到卡根目录，自带 5 个测试音效，也可以换成你自己的：
+Copy the contents of `output/card/` to the root of the card. Five test sounds are included, and you can replace them with your own:
 
 ```text
 A:\Z5APP.BIN
 A:\SHUTTER\MENU.DAT
-A:\SHUTTER\1.WAV ~ 5.WAV
-A:\Z5LOG\DIAG01.BIN ~ DIAG20.BIN
+A:\SHUTTER\1.WAV ... 5.WAV
+A:\Z5LOG\DIAG01.BIN ... DIAG20.BIN
 ```
 
-相机自己新建的文件留不住，所以 `MENU.DAT` 和 `Z5LOG` 里的 20 个记录文件必须事先放在卡上。
+Files created by the camera do not persist, so `MENU.DAT` and the 20 record files in `Z5LOG` must already be on the card.
 
-### 5. 音效格式
+### 5. Sound format
 
-仓库自带 5 个测试音效。自定义时文件名必须是 `1.WAV` 到 `5.WAV`，不需要 5 个都有。标准 44 字节文件头的 WAV，未压缩 PCM，48 kHz，16 位，立体声，至少 2000 字节，最多读取约 1.28 秒。声音要从文件开头就响，开头的静音会让快门声听起来变晚。
+Custom sounds must be named `1.WAV` to `5.WAV`, and you do not need all five. Use a WAV with a standard 44-byte header: uncompressed PCM, 48 kHz, 16-bit, stereo, at least 2000 bytes. Up to about 1.28 seconds is read. The sound should start at the very beginning of the file, because leading silence makes the shutter sound late.
 
-转换工具（需要 Python 3）：
+To convert a file (requires Python 3):
 
 ```bash
-python tools/make_snd_wav.py 你的声音.wav --out 转换结果
+python tools/make_snd_wav.py your_sound.wav --out converted
 ```
 
-结果是转换目录里的 `SND.WAV`，改名后放进 `SHUTTER`。
+The result is `SND.WAV` in that folder. Rename it and put it in `SHUTTER`.
 
-### 6. 菜单
+### 6. Menus
 
-设定菜单最后一行“扩展功能”，进去是：
+The last row of the Setup menu, "Extensions" (扩展功能 in Chinese), holds:
 
-| 项目 | 说明 |
+| Item | What it does |
 | --- | --- |
-| 快门声音 | 开启静音拍摄后生效，可调开关、类型、音量，“重新载入”重新读取声音文件 |
-| 照片高光显示 | 还需要在自定义设定 g 组把原厂“高光显示”的图案打开 |
-| 竖拍显示 | 竖拍界面总开关（生成的设置文件默认打开） |
-| 竖拍触控 | 竖拍时的触摸；关闭后竖拍下触摸不起作用，横拿不受影响 |
-| 焦距显示 | 所有 CPU 镜头显示焦距 |
-| 电量显示 | 电池图标里显示百分比，20% 以下变红 |
-| 自定义 DISP | 总开关控制四页接管；进入 DISP0～DISP3 分别设置水平仪、直方图、详细信息；LCD/EVF 分别记忆页号 |
-| 保存测试记录 | 出问题时停在那个画面，按 OK 保存，行上显示“已存 01”这样的编号；20 个存满后循环覆盖最旧记录 |
+| Shutter sound | With silent photography on: on/off, sound type, volume, reload |
+| Photo zebra | Also turn on the stock highlight display pattern in Custom Settings group g |
+| Portrait UI | Portrait layout master switch (on in the generated settings file) |
+| Portrait touch | Touch in portrait; when off, touches in portrait are ignored, landscape is unaffected |
+| Focal length | Focal length for every CPU lens |
+| Battery % | Charge in percent inside the battery icon, red at 20 % and below |
+| Custom DISP | One master for DISP0–DISP3; configure level, histogram and details per page; LCD/EVF remember their pages separately |
+| Timed Bulb | Set hours, minutes and seconds in the photo shooting menu. Start exits the menu and begins exposure about 1.5 seconds later. | A19 tested on camera. User reported A39 worked. |
+| Save log | Saves a test record; the row shows the file number ("01"), cycling over the oldest after all 20 fill |
 
-设定菜单“扩展功能”下面还有一行 **连拍提速**，进去是“机械快门提速”“电子快门提速”两个开关（默认开）。使用时请手动关闭原厂“连拍时查看全部”；曝光和对焦停在第一张，只适合 AF-S。详见 [docs/BURST_SPEED.md](docs/BURST_SPEED.md)。
+- **Framing grid:** Custom Setting d8, with On (4×4), Off, 3×3, or 2×2 (centre cross).
+- **Histogram with level:** press DISP to reach the virtual horizon page. It appears about 1 second after power-on or wake, and "Apply settings to live view" must be on.
+- **Status:** the last row of MY MENU shows the module status. `OK ...` means it is working (`正常 ...` in Chinese).
 
-其他：
+Select **Extensions → Custom DISP → DISP0..DISP3 → Level → Native** for the L37 experiment. Native pose/setup is active again; visiting the stock level page first is no longer required. L37 addresses a suspected stale-dirty callback during LCD/EVF switching, but the L30 hard hang is not confirmed fixed on hardware. TypeA remains available.
 
-- **取景网格：** 自定义设定 d8，选开启（4×4）、关闭、3×3 或 2×2（中心十字）。
-- **同框：** 按 DISP 切到水平仪页。开机或唤醒后约 1 秒出现，需要“将设置应用于即时取景”为开启。
-- **自定义页：** 总开关打开后，按 DISP 切换逻辑页，原厂实际使用 DISP0；详细信息关闭时使用简单页显示许可，保留基础信息与电池。切页后将两端逻辑页号保存到 `MENU.DAT`，开机有效读取后恢复；失败沿用设置重试与写入校验。直方图使用独立取数与 CPU 批量绘制，减少逐柱原厂图形调用，尚无同条件实机加速倍数。
-- **原版试验：** 选择原版后在对应自定义页测试，不再要求先访问原厂水平仪页。L37 恢复原版取姿态与配置，并针对 L30 切 EVF 硬卡调整恢复顺序；是否修复仍需实机确认。
-- **状态：** “我的菜单”最后一行显示模块状态与 `L39` 性能读数；计数率不是屏幕实际 fps。
+With the master on, DISP cycles logical pages while the native page stays DISP0. Details on uses original DISP0 masks; details off projects DISP1 masks onto DISP0, preserving basics and battery. Accepted page changes save logical LCD/EVF identities to the existing settings file, and startup restores them after a valid read. Turning the master off restores native page selection. All logical pages use the existing scoped native-level or TypeA path and private cached histogram. The complete combination still needs camera validation.
 
-### 7. 反馈测试问题
+### 7. Reporting a problem
 
-1. 让问题出现，停在出问题的画面，拍一张屏幕照片。
-2. 马上保存测试记录（见上表），记下编号，写一句当时做了什么、看到了什么。
-3. 把卡上 `Z5LOG` 里写过的 DIAG 文件、照片和说明一起发给维护者。记录只含界面绘制、触摸和电池等状态，没有照片内容。
+Stay on the screen where the problem shows, take a photo of it, then use Extensions → Save log and note the number with a sentence on what you did. Send the written DIAG files from `Z5LOG`, the photos and the notes. The records hold only UI drawing, touch and battery state, no image content.
 
-## 恢复
+## Recovery
 
-死机时电源开关和拔卡可能都没有反应：
+If the camera freezes, the power switch and removing the card may have no effect:
 
-1. 取下电池。
-2. 拔卡，或在电脑上删除卡上的 `Z5APP.BIN`。
-3. 重新装电池开机。没有模块时相机按原厂流程运行。
+1. Remove the battery.
+2. Remove the card, or delete `Z5APP.BIN` from it on a computer.
+3. Put the battery back and turn the camera on. Without the module, it runs the stock path.
 
-要彻底恢复，到尼康官网下载 Z 5 C 1.50 固件，按官方步骤重新刷入。
+To restore the camera completely, download the Z 5 C 1.50 firmware from Nikon and install it following the official steps.
 
-## 仓库内容
+## Repository contents
 
-| 路径 | 内容 |
+| Path | Contents |
 | --- | --- |
-| `patch.py`、`patch_data/` | 构建工具和补丁数据（地址、校验用的原字节片段、我们自己的代码） |
-| `card/Z5APP.BIN` | 预编译的卡上模块，只含本项目和 z5mod SDK 的代码 |
-| `card/SHUTTER/` | 默认测试音效 |
-| `src/` | 卡上模块和固件钩子的源码 |
-| `tools/` | 音频转换工具 |
-| `PLAN.md` | 已完成的内容和未来计划 |
-| `docs/` | [连拍提速](docs/BURST_SPEED.md)、开发进度、[自定义 DISP 交接](docs/CUSTOM_DISP_HANDOFF.md)和[卡模块构建](docs/CARD_MODULE_BUILD.md) |
-| `tests/card_module/` | 显示许可、设置兼容、刷新间隔和直方图栅格宿主测试 |
+| `patch.py`, `patch_data/` | Build tool and patch data: addresses, short original-byte fragments for verification, and this project's code |
+| `card/Z5APP.BIN` | Prebuilt card module, containing only code from this project and the z5mod SDK |
+| `card/SHUTTER/` | Default test sounds |
+| `src/` | Source for the card module and firmware hooks |
+| `tools/` | Audio converter |
+| `PLAN.md` | Completed and future work (Chinese) |
+| `docs/` | Development notes, custom DISP handoff and module build instructions (Chinese) |
+| `tests/card_module/` | Host tests for visibility, settings, refresh intervals and the shared histogram raster |
 
-卡模块可按[构建说明](docs/CARD_MODULE_BUILD.md)用固定 SDK 和自备 MAIN 重建；普通用户只需要 `patch.py` 或预编译插件。
+The [module build instructions](docs/CARD_MODULE_BUILD.md) describe the pinned SDK and private MAIN inputs. Most users only need `patch.py` or the prebuilt module.
 
-## 致谢与许可
+## Credits and licence
 
-本项目代码以 MIT 许可发布，见 [LICENSE](LICENSE) 和 [NOTICE.md](NOTICE.md)。
+This project's code is released under the MIT licence. See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
 
-本项目建立在以下项目的工作之上，感谢它们的作者和贡献者：
+This project builds on the following work. Thanks to their authors and contributors:
 
-| 项目 | 我们如何使用 |
+| Project | How it was used |
 | --- | --- |
-| [z5mod](https://github.com/youyli03/z5mod) | 直接使用：卡上模块加载器、SDK、固件解码器 |
-| [wonder-lantern-z30](https://github.com/WonderLantern/wonder-lantern-z30) | 参考做法：直方图水平仪同框、网格参数、照片斑马纹，以及“用户自备固件、本地生成”的发布方式。未复制其代码，Z 5 上的地址和钩子是另行定位和编写的 |
-| [WonderLantern-z6](https://github.com/WonderLantern/WonderLantern-z6) | 参考功能设计：自定义快门声音、自定义参考线 |
-| [z7-qemu](https://github.com/WonderLantern/z7-qemu)（作者 [R3tr0ooo](https://github.com/R3tr0ooo)）、[z6-qemu](https://github.com/WonderLantern/z6-qemu) | 我们的模拟器 [z5-qemu](https://github.com/WonderLantern/z5-qemu) 派生自这两个项目，用于验证菜单和按键 |
-| [z7ii-qemu](https://github.com/nightglasses/z7ii-qemu) | 模拟器取景和对焦路线的参考资料 |
+| [z5mod](https://github.com/youyli03/z5mod) | Used directly: card module loader, SDK and firmware decoder |
+| [wonder-lantern-z30](https://github.com/WonderLantern/wonder-lantern-z30) | Approach studied: histogram with level, grid parameters, photo zebra, and the bring-your-own-firmware release model. Its code is not copied; the Z 5 addresses and hooks were located and written separately |
+| [WonderLantern-z6](https://github.com/WonderLantern/WonderLantern-z6) | Feature design studied: custom shutter sounds and framing guides |
+| [z7-qemu](https://github.com/WonderLantern/z7-qemu) (by [R3tr0ooo](https://github.com/R3tr0ooo)), [z6-qemu](https://github.com/WonderLantern/z6-qemu) | Our emulator, [z5-qemu](https://github.com/WonderLantern/z5-qemu), derives from these and was used to check menus and buttons |
+| [z7ii-qemu](https://github.com/nightglasses/z7ii-qemu) | Reference for the emulator's live view and autofocus plans |
 
-默认测试音效由维护者提供，说明见 [NOTICE.md](NOTICE.md)。
+The default test sounds are provided by the maintainer. See [NOTICE.md](NOTICE.md).
+
+
+## English-label module
+
+This branch contains the English-label `card/Z5APP.BIN`. The Russian Cyrillic module produced square characters and was removed from the ready-to-use binary.
+
+Use the module from `card/Z5APP.BIN`. Back up the existing card module before replacing it. Replace only `Z5APP.BIN` when the compatible MAIN firmware is already installed.
+
+The current English module SHA-256 is `a02afc95f7fb26056093d7e81c3ded95f5355c325e9c66592dbebac43453ae90`.

@@ -1,4 +1,4 @@
-/* Burst speed-up ("连拍提速"): setup-menu row, its two switches and the background task.
+/* Burst speed-up ("ш┐ЮцЛНцПРщАЯ"): setup-menu row, its two switches and the background task.
  *
  * Camera-tested as separate readout builds (research L41-L51, 2026-11-14/15); this release combines them:
  *   - the live-view-restart capture holds 0x56 0x3c 0x3d 0x59 0x3f are taken out of the blocking set
@@ -15,9 +15,9 @@
  * Exposure and focus stay at the first frame (as in an "extended" burst): suited to AF-S, not to tracking.
  * Measured: mechanical 233 -> ~195 ms (also in low light, stock ~270), silent 400 -> ~300 ms.
  */
-#define BURST_SLOT_ENTRY  254u             /* setup row "连拍提速" */
-#define BURST_SLOT_MECH   255u             /* page row "机械快门提速：开/关" */
-#define BURST_SLOT_SIL    256u             /* page row "电子快门提速：开/关" */
+#define BURST_SLOT_ENTRY  254u             /* setup row "ш┐ЮцЛНцПРщАЯ" */
+#define BURST_SLOT_MECH   255u             /* page row "цЬ║цв░х┐лщЧицПРщАЯя╝Ъх╝А/хЕ│" */
+#define BURST_SLOT_SIL    256u             /* page row "чФ╡хнРх┐лщЧицПРщАЯя╝Ъх╝А/хЕ│" */
 #define BURST_ID_ENTRY    0x2FCAu          /* ids not present in the stock ROM data */
 #define BURST_ID_MECH     0x2FCBu
 #define BURST_ID_SIL      0x2FCCu
@@ -94,7 +94,7 @@ IMG_FN static void burst_step(cm_t *c)
 #endif
 #ifdef BULB_TIMER_MS
 /* A12 (M900 search, 2026-11-16): timed Bulb through the camera's own remote-capture path (the USB 0x9207 / 0x920C
- * internals, camera-tested over USB: start -> ~10 s open -> end). Armed by "保存测试记录" in Bulb (setting 0x020E = 2);
+ * internals, camera-tested over USB: start -> ~10 s open -> end). Armed by "ф┐ЭхнШц╡ЛшпХшо░х╜Х" in Bulb (setting 0x020E = 2);
  * BT_DELAY_MS later the task calls 0x10219DDE(0xC29C46D8, [0xC18CA1CC]) (remote release start, request 0x46) and
  * BULB_TIMER_MS after that 0x1021A32C(&0) (remote end). State block in the record buffer at 0xDC0 ('TB12'):
  * [1] phase 0 idle / 1 armed / 2 open / 3 done, [2] time (arm target, then start ms), [3] start result,
@@ -210,7 +210,7 @@ IMG_FN static void bulb_step(cm_t *c)
     if (!BTP(c)) return;
     volatile u32 *q = BTP(c)->q;               /* armed from the menu, mirrored into the record by burst_task */
     if (BTP(c)->close_at && (s32)(*(volatile u32 *)CM_MS_CLOCK - BTP(c)->close_at) >= 0) {
-        BTP(c)->close_at = 0u;                 /* "开始" pressed: leave the menu */
+        BTP(c)->close_at = 0u;                 /* "х╝АхзЛ" pressed: leave the menu */
 #ifdef BT_HALF_PRESS
         bt_half(1u);                           /* a simulated half press, released BT_HALF_MS later */
         BTP(c)->half_off = (*(volatile u32 *)CM_MS_CLOCK + BT_HALF_MS) | 1u;
@@ -269,11 +269,11 @@ IMG_FN static void bulb_step(cm_t *c)
 #endif
 
 #ifdef BULB_MENU
-/* "B门定时" page (photo shooting menu row -> 4 rows): start / cancel, hours, minutes, seconds.
+/* "BщЧихоЪцЧ╢" page (photo shooting menu row -> 4 rows): start / cancel, hours, minutes, seconds.
  * Right or OK adds one, left takes one (wraps 0..9 h, 0..59 min / s). Start arms the run BT_DELAY_MS later
  * (time to leave the menu with a half press); pressed again it cancels (before the start) or ends now.
  * Only in Bulb (0x020E = 2); otherwise the row says so. Labels always Simplified Chinese (AGENTS.md rule 8). */
-#define BT_SLOT_ENTRY  257u             /* photo shooting menu row "B门定时：h:mm:ss" */
+#define BT_SLOT_ENTRY  257u             /* photo shooting menu row "BщЧихоЪцЧ╢я╝Ъh:mm:ss" */
 #define BT_SLOT_ROW    258u             /* 258..261: start, hours, minutes, seconds */
 #define BT_ID_ENTRY    0x2FC0u          /* ids not present in the stock ROM row tables */
 #define BT_ID_ROW      0x2FC1u
@@ -309,7 +309,7 @@ IMG_FN static void bt_time(cm_t *c, u16 *b, u32 *n)
     hz_put(b, n, ':'); bt_two(b, n, BTP(c)->m); hz_put(b, n, ':'); bt_two(b, n, BTP(c)->s);
 }
 
-IMG_FN static void bt_name(u16 *b, u32 *n)      /* B门定时 */
+IMG_FN static void bt_name(u16 *b, u32 *n)      /* BщЧихоЪцЧ╢ */
 {
     hz_put(b, n, 'B'); hz_put(b, n, 0x95E8u); hz_put(b, n, 0x5B9Au); hz_put(b, n, 0x65F6u);
 }
@@ -329,30 +329,30 @@ IMG_FN static void bt_labels(cm_t *c)
     bt_name(b, &n); hz_put(b, &n, 0xFF1Au); bt_time(c, b, &n);
     bt_set(b, n, BT_SLOT_ENTRY);
     n = 0;
-    if (ph == 1u) {                            /* 等待开始（OK取消） */
+    if (ph == 1u) {                            /* чнЙх╛Ех╝АхзЛя╝ИOKхПЦц╢Ия╝Й */
         hz_put(b, &n, 0x7B49u); hz_put(b, &n, 0x5F85u); hz_put(b, &n, 0x5F00u); hz_put(b, &n, 0x59CBu);
         hz_put(b, &n, 0xFF08u); hz_put(b, &n, 'O'); hz_put(b, &n, 'K'); hz_put(b, &n, 0x53D6u); hz_put(b, &n, 0x6D88u);
         hz_put(b, &n, 0xFF09u);
-    } else if (ph == 2u) {                     /* 曝光中（OK结束） */
+    } else if (ph == 2u) {                     /* цЫЭхЕЙф╕ня╝ИOKч╗УцЭЯя╝Й */
         hz_put(b, &n, 0x66DDu); hz_put(b, &n, 0x5149u); hz_put(b, &n, 0x4E2Du);
         hz_put(b, &n, 0xFF08u); hz_put(b, &n, 'O'); hz_put(b, &n, 'K'); hz_put(b, &n, 0x7ED3u); hz_put(b, &n, 0x675Fu);
         hz_put(b, &n, 0xFF09u);
-    } else if (BTP(c)->msg == 1u) {              /* 请先设为B门 */
+    } else if (BTP(c)->msg == 1u) {              /* шп╖хЕИшо╛ф╕║BщЧи */
         hz_put(b, &n, 0x8BF7u); hz_put(b, &n, 0x5148u); hz_put(b, &n, 0x8BBEu); hz_put(b, &n, 0x4E3Au);
         hz_put(b, &n, 'B'); hz_put(b, &n, 0x95E8u);
-    } else if (BTP(c)->msg == 2u) {              /* 请先设定时间 */
+    } else if (BTP(c)->msg == 2u) {              /* шп╖хЕИшо╛хоЪцЧ╢щЧ┤ */
         hz_put(b, &n, 0x8BF7u); hz_put(b, &n, 0x5148u); hz_put(b, &n, 0x8BBEu); hz_put(b, &n, 0x5B9Au);
         hz_put(b, &n, 0x65F6u); hz_put(b, &n, 0x95F4u);
-    } else {                                   /* 开始：h:mm:ss */
+    } else {                                   /* х╝АхзЛя╝Ъh:mm:ss */
         hz_put(b, &n, 0x5F00u); hz_put(b, &n, 0x59CBu); hz_put(b, &n, 0xFF1Au); bt_time(c, b, &n);
     }
     bt_set(b, n, BT_SLOT_ROW);
     n = 0; hz_put(b, &n, 0x5C0Fu); hz_put(b, &n, 0x65F6u); hz_put(b, &n, 0xFF1Au); hz_put(b, &n, '0' + BTP(c)->h);
-    bt_set(b, n, BT_SLOT_ROW + 1u);            /* 小时：h */
+    bt_set(b, n, BT_SLOT_ROW + 1u);            /* х░ПцЧ╢я╝Ъh */
     n = 0; hz_put(b, &n, 0x5206u); hz_put(b, &n, 0x949Fu); hz_put(b, &n, 0xFF1Au); bt_two(b, &n, BTP(c)->m);
-    bt_set(b, n, BT_SLOT_ROW + 2u);            /* 分钟：mm */
+    bt_set(b, n, BT_SLOT_ROW + 2u);            /* хИЖщТЯя╝Ъmm */
     n = 0; hz_put(b, &n, 0x79D2u); hz_put(b, &n, 0xFF1Au); bt_two(b, &n, BTP(c)->s);
-    bt_set(b, n, BT_SLOT_ROW + 3u);            /* 秒：ss */
+    bt_set(b, n, BT_SLOT_ROW + 3u);            /* чзТя╝Ъss */
 }
 
 IMG_FN static void bt_show(cm_t *c, u32 refresh)
@@ -467,7 +467,7 @@ IMG_FN static void burst_task(u32 unused)
 }
 
 /* Labels, built from character constants (string literals are not in the copied image). */
-IMG_FN static void burst_put_name(u16 *b, u32 *n)              /* 连拍提速 */
+IMG_FN static void burst_put_name(u16 *b, u32 *n)              /* ш┐ЮцЛНцПРщАЯ */
 {
     hz_put(b, n, 0x8FDEu); hz_put(b, n, 0x62CDu); hz_put(b, n, 0x63D0u); hz_put(b, n, 0x901Fu);
 }
@@ -495,7 +495,7 @@ IMG_FN static void burst_label(cm_t *c)                         /* setup row */
     }
 }
 
-/* "机械快门提速：开/关" (silent = 0) or "电子快门提速：开/关" (silent = 1). */
+/* "цЬ║цв░х┐лщЧицПРщАЯя╝Ъх╝А/хЕ│" (silent = 0) or "чФ╡хнРх┐лщЧицПРщАЯя╝Ъх╝А/хЕ│" (silent = 1). */
 IMG_FN static void burst_row_label(cm_t *c, u32 silent)
 {
     u32 n = 0, on = silent ? c->burst_sil : c->burst_mech, slot = silent ? BURST_SLOT_SIL : BURST_SLOT_MECH;
@@ -530,7 +530,7 @@ IMG_FN static void burst_row_label(cm_t *c, u32 silent)
  * task hung the camera at power-on, and writing it from the menu handler hung the emulator as well.
  * Users switch it off themselves (docs/BURST_SPEED.md); with it on the screen can stay black after a burst. */
 
-/* Setup row OK: the switch page, titled "连拍提速". */
+/* Setup row OK: the switch page, titled "ш┐ЮцЛНцПРщАЯ". */
 IMG_FN static u32 burst_entry_ok(u32 a0, u32 a1, u32 a2, u32 a3)
 {
     cm_t *c = cm_get();

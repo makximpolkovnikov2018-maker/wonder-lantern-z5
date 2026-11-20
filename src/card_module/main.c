@@ -18,15 +18,15 @@
 #include "custom_disp/settings.h"
 
 #ifdef BULB_MENU
-/* "B门定时" in the photo shooting menu (burst_speed.inc / burst_speed_install.inc): the timed Bulb of A14/A15
+/* "BщЧихоЪцЧ╢" in the photo shooting menu (burst_speed.inc / burst_speed_install.inc): the timed Bulb of A14/A15
  * (computer-control switch + full 0x9207 executor sequence), time set in the menu instead of at build time. */
 #ifndef BULB_TIMER_MS
 #define BULB_TIMER_MS 0u
 #endif
 #define BULB_PCMODE
 #define BULB_FULLEXEC
-/* A18 (camera OK 2026-11-16): after "开始" the module task simulates a half press to leave the menu; the run
- * starts BT_DELAY_MS after "开始" (A18 had 6 s, too long once the menu closes by itself). */
+/* A18 (camera OK 2026-11-16): after "х╝АхзЛ" the module task simulates a half press to leave the menu; the run
+ * starts BT_DELAY_MS after "х╝АхзЛ" (A18 had 6 s, too long once the menu closes by itself). */
 #define BT_CLOSE_TASK
 #define BT_HALF_PRESS
 #ifndef BT_DELAY_MS
@@ -47,7 +47,7 @@ typedef struct {
     u32 snap_at;                    /* A22: ms clock of the next RAM snapshot, 0 none */
     u32 pk_hdr;                     /* BT_PICKER: header of the h:m:s picker view (copy of the date/time page) */
     u32 im_n, im_runs;              /* PC_IMPORT: files imported by the last run; runs this power-up */
-    u32 im_hdr;                     /* PC_IMPORT: header of the "导入配方" page */
+    u32 im_hdr;                     /* PC_IMPORT: header of the "хп╝хЕещЕНцЦ╣" page */
     u32 im_log[1 + 4 * 9];          /* PC_IMPORT: 'PCIM', then per file {card id | slot << 16, data rc, store rc, busy} */
 } bt_t;
 #define BTP(c)        ((bt_t *)(c)->burst_viewall_off)
@@ -68,7 +68,7 @@ typedef struct {
 #define SETTING_READ  0x10456098u      /* u32 read(key)                          */
 /* 2026-11-16: 0x1400 turned out to be image quality, not the language (JPG reads 3 = "English").
  * Until the real language setting is known the module's own rows are always Simplified Chinese. */
-#define CM_HANS       1u
+#define CM_HANS       0u
 #define LANG_ENGLISH  3u               /* read in the emulator with English UI; every
                                          * other language gets Simplified Chinese */
 #define ASCII_SET     0x10447BAAu      /* (text, slot, style)                    */
@@ -1067,7 +1067,7 @@ IMG_FN static void sub_title(cm_t *c, const u16 *hz, const char *en)
 IMG_FN static void hub_open(cm_t *c)
 {
     if (!c->hub_hdr) return;
-    c->title_slot = TITLE_SLOT;                /* "扩展功能", as the SETUP row */
+    c->title_slot = TITLE_SLOT;                /* "цЙйх▒ХхКЯшГ╜", as the SETUP row */
     ((volatile u32 *)PAGE0)[10] = c->hub_hdr;
     FW(page_fn, OPEN_PAGE)(2u, OWN_INDEX);
 }
@@ -1251,7 +1251,7 @@ IMG_FN static u32 focal_off_ok(u32 a0, u32 a1, u32 a2, u32 a3)
 IMG_FN static void hz_put(u16 *b, u32 *n, u32 ch) { b[(*n)++] = (u16)ch; }
 IMG_FN static void en_put(char *b, u32 *n, u32 ch) { b[(*n)++] = (char)ch; }
 
-IMG_FN static void bat_label(cm_t *c)          /* "电量显示：开/关" */
+IMG_FN static void bat_label(cm_t *c)          /* "чФ╡щЗПцШ╛чд║я╝Ъх╝А/хЕ│" */
 {
     u32 n = 0;
     if (c->hans) {
@@ -1291,7 +1291,7 @@ IMG_FN static void sound_label(cm_t *c)        /* hub row: the shutter-sound row
 }
 
 #ifdef VUI_DIAG_FOCUS
-IMG_FN static void save_label(cm_t *c)         /* "保存测试记录" [：已存 NN / ：已满 / ：失败] */
+IMG_FN static void save_label(cm_t *c)         /* "ф┐ЭхнШц╡ЛшпХшо░х╜Х" [я╝Ъх╖▓хнШ NN / я╝Ъх╖▓ц╗б / я╝Ъхд▒ш┤е] */
 {
     u32 n = 0, ix = c->dg_ix, t = 0;
     if (ix >= 1u && ix <= DG_FILES) while (ix >= 10u) { ix -= 10u; t++; }
@@ -1435,7 +1435,7 @@ IMG_FN static u32 bat_set(u32 on)
 IMG_FN static u32 bat_on_ok(u32 a0, u32 a1, u32 a2, u32 a3) { (void)a0; (void)a1; (void)a2; (void)a3; return bat_set(1u); }
 IMG_FN static u32 bat_off_ok(u32 a0, u32 a1, u32 a2, u32 a3) { (void)a0; (void)a1; (void)a2; (void)a3; return bat_set(0u); }
 
-/* Group 119: "竖拍触控：开/关". */
+/* Group 119: "члЦцЛНшзжцОзя╝Ъх╝А/хЕ│". */
 IMG_FN static void touch_label(cm_t *c)
 {
     u32 n = 0;
@@ -1646,21 +1646,21 @@ static void init_strings(cm_t *c)
     copy_str(c->en_bad, sizeof(c->en_bad), " !");
     copy_str(c->en_done, sizeof(c->en_done), ": OK");
     copy_str(c->en_fail, sizeof(c->en_fail), ": failed");
-    copy_u16(c->hz[R_ONOFF], L_HZ, (const u16 *)u"快门声音：");
-    copy_u16(c->hz[R_TYPE], L_HZ, (const u16 *)u"类型：");
-    copy_u16(c->hz[R_VOL], L_HZ, (const u16 *)u"音量：");
-    copy_u16(c->hz[R_RELOAD], L_HZ, (const u16 *)u"重新载入");
-    copy_u16(c->hz[R_ENTRY], L_HZ, (const u16 *)u"扩展功能");
-    copy_u16(c->hz_zebra, L_HZ, (const u16 *)u"照片高光显示：");
-    copy_u16(c->hz_vui, L_HZ, (const u16 *)u"竖拍显示：");
+    copy_u16(c->hz[R_ONOFF], L_HZ, (const u16 *)u"х┐лщЧихг░щЯ│я╝Ъ");
+    copy_u16(c->hz[R_TYPE], L_HZ, (const u16 *)u"ч▒╗хЮЛя╝Ъ");
+    copy_u16(c->hz[R_VOL], L_HZ, (const u16 *)u"щЯ│щЗПя╝Ъ");
+    copy_u16(c->hz[R_RELOAD], L_HZ, (const u16 *)u"щЗНцЦ░ш╜╜хЕе");
+    copy_u16(c->hz[R_ENTRY], L_HZ, (const u16 *)u"цЙйх▒ХхКЯшГ╜");
+    copy_u16(c->hz_zebra, L_HZ, (const u16 *)u"чЕзчЙЗщлШхЕЙцШ╛чд║я╝Ъ");
+    copy_u16(c->hz_vui, L_HZ, (const u16 *)u"члЦцЛНцШ╛чд║я╝Ъ");
     copy_str(c->en_vui, L_EN, "Portrait UI: ");
-    copy_u16(c->hz_fl, L_HZ, (const u16 *)u"焦距显示：");
+    copy_u16(c->hz_fl, L_HZ, (const u16 *)u"чДжш╖ЭцШ╛чд║я╝Ъ");
     copy_str(c->en_fl, L_EN, "Focal length: ");
-    copy_u16(c->hz_on, 2, (const u16 *)u"开");
-    copy_u16(c->hz_off, 2, (const u16 *)u"关");
+    copy_u16(c->hz_on, 2, (const u16 *)u"х╝А");
+    copy_u16(c->hz_off, 2, (const u16 *)u"хЕ│");
     copy_u16(c->hz_bad, 4, (const u16 *)u" !");
-    copy_u16(c->hz_done, 4, (const u16 *)u"：完成");
-    copy_u16(c->hz_fail, 4, (const u16 *)u"：失败");
+    copy_u16(c->hz_done, 4, (const u16 *)u"я╝ЪхоМцИР");
+    copy_u16(c->hz_fail, 4, (const u16 *)u"я╝Ъхд▒ш┤е");
 }
 
 static const u32 navigation[] = {
@@ -1731,9 +1731,9 @@ static u32 install_zebra_page(cm_t *c, u32 *title, u32 first_map)
     disp[1] = build_map(first_map, img_addr(c, zebra_off_ok), STAY);
     if (!disp[0] || !disp[1]) return 42u;
     if (c->hans) {
-        FW(set_fn, UTF16_SET)((const u16 *)u"照片高光显示", SLOT_TITLE_Z, HANS_STYLE);
-        FW(set_fn, UTF16_SET)((const u16 *)u"开", SLOT_Z_ON, HANS_STYLE);
-        FW(set_fn, UTF16_SET)((const u16 *)u"关", SLOT_Z_OFF, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"чЕзчЙЗщлШхЕЙцШ╛чд║", SLOT_TITLE_Z, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"х╝А", SLOT_Z_ON, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"хЕ│", SLOT_Z_OFF, HANS_STYLE);
         *(volatile u8 *)RUNTIME_STYLE = HANS_FONT;
     } else {
         FW(set_fn, ASCII_SET)("Photo zebra", SLOT_TITLE_Z, 0u);
@@ -1764,7 +1764,7 @@ static u32 install_vui_page(cm_t *c, u32 *title, u32 first_map)
     disp[1] = build_map(first_map, img_addr(c, vui_off_ok), STAY);
     if (!disp[0] || !disp[1]) return 52u;
     if (c->hans) {
-        FW(set_fn, UTF16_SET)((const u16 *)u"竖拍显示", SLOT_TITLE_V, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"члЦцЛНцШ╛чд║", SLOT_TITLE_V, HANS_STYLE);
         *(volatile u8 *)RUNTIME_STYLE = HANS_FONT;
     } else {
         FW(set_fn, ASCII_SET)("Portrait UI", SLOT_TITLE_V, 0u);
@@ -1793,7 +1793,7 @@ static u32 install_focal_page(cm_t *c, u32 *title, u32 first_map)
     disp[1] = build_map(first_map, img_addr(c, focal_off_ok), STAY);
     if (!disp[0] || !disp[1]) return 52u;
     if (c->hans) {
-        FW(set_fn, UTF16_SET)((const u16 *)u"焦距显示", SLOT_TITLE_F, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"чДжш╖ЭцШ╛чд║", SLOT_TITLE_F, HANS_STYLE);
         *(volatile u8 *)RUNTIME_STYLE = HANS_FONT;
     } else {
         FW(set_fn, ASCII_SET)("Focal length", SLOT_TITLE_F, 0u);
@@ -1911,7 +1911,7 @@ static u32 install_menu(cm_t *c)
 
     /* SETUP: 41 stock rows + row 42 (copy of row 41 with our slot, flags, id). */
     u32 vui_ok = c->fx && *(volatile u16 *)VUI_SITE != 0xE92Du;
-    u32 extra = 2u;                            /* group 116: "扩展功能" (features on its hub); "连拍提速" */
+    u32 extra = 2u;                            /* group 116: "цЙйх▒ХхКЯшГ╜" (features on its hub); "ш┐ЮцЛНцПРщАЯ" */
     u32 *rows = (u32 *)z5_alloc((STOCK_ROWS + extra) * ROW_SIZE, 0);
     u32 *disp = (u32 *)z5_alloc((STOCK_ROWS + extra) * 4u, 0);
     if (!rows || !disp) return 13u;
@@ -1925,7 +1925,7 @@ static u32 install_menu(cm_t *c)
     disp[STOCK_ROWS] = build_map(((const u32 *)SETUP_DISP)[STOCK_ROWS - 1u], img_addr(c, entry_ok), STAY);
     if (!disp[STOCK_ROWS]) return 14u;
     c->entry_row = (u32)entry;
-    {   /* burst speed-up: its own setup row below "扩展功能" (the hub has no room for a ninth row) */
+    {   /* burst speed-up: its own setup row below "цЙйх▒ХхКЯшГ╜" (the hub has no room for a ninth row) */
         u32 *b = entry + ROW_WORDS;
         copy_words(b, entry, ROW_WORDS);
         b[0] = BURST_SLOT_ENTRY;
@@ -2007,7 +2007,7 @@ static u32 install_menu(cm_t *c)
     if (install_custom_page(c, title, first_map) != 1u) return 90u;
     if (install_burst_page(c, title, first_map) != 1u) c->burst_hdr = 0u;   /* burst speed-up switches */
 #ifdef BULB_MENU
-    if (BTP(c)) BTP(c)->install = install_bt(c, title, first_map);   /* B门定时 row in the photo shooting menu */
+    if (BTP(c)) BTP(c)->install = install_bt(c, title, first_map);   /* BщЧихоЪцЧ╢ row in the photo shooting menu */
 #endif
     if (install_hub(c, title, first_map) != 1u) c->hub_hdr = 0u;                   /* group 116 */
 
@@ -2070,8 +2070,8 @@ static u32 install_grid(cm_t *c)
     disp[3] = build_map(row_map, img_addr(c, grid_crs_ok), BACK);
     if (!disp[0] || !disp[2] || !disp[3]) return 33u;
     if (c->hans) {
-        FW(set_fn, UTF16_SET)((const u16 *)u"3×3", SLOT_3X3, HANS_STYLE);
-        FW(set_fn, UTF16_SET)((const u16 *)u"2×2", SLOT_CROSS, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"3├Ч3", SLOT_3X3, HANS_STYLE);
+        FW(set_fn, UTF16_SET)((const u16 *)u"2├Ч2", SLOT_CROSS, HANS_STYLE);
         *(volatile u8 *)RUNTIME_STYLE = HANS_FONT;
     } else {
         FW(set_fn, ASCII_SET)("3x3", SLOT_3X3, 0u);
@@ -2209,7 +2209,7 @@ static int show_stop(z5_ctx *ctx)
     u32 note = ((volatile u32 *)Z5_ANCHOR)[3];
     char *line = (char *)STOP_TEXT;
     u32 pos = CM_HANS
-        ? puts16(line, STOP_CHARS, 0u, (const u16 *)u"未启用")
+        ? puts16(line, STOP_CHARS, 0u, (const u16 *)u"цЬкхРпчФи")
         : z5_puts(line, STOP_CHARS, 0u, "NO ");
     pos = z5_puts(line, STOP_CHARS, pos, "X");
     pos = z5_putdec(line, STOP_CHARS, pos, note & 0xFFu);
@@ -2227,7 +2227,7 @@ static int show_unfinished(z5_ctx *ctx, cm_t *s)
     u32 ms = *(volatile u32 *)CM_MS_CLOCK - s->start_ms, sec = 0u;
     while (ms >= 1000u && sec < 99u) { ms -= 1000u; sec++; }
     u32 pos = CM_HANS
-        ? puts16(line, STOP_CHARS, 0u, (const u16 *)u"未完成")
+        ? puts16(line, STOP_CHARS, 0u, (const u16 *)u"цЬкхоМцИР")
         : z5_puts(line, STOP_CHARS, 0u, "RUN");
     pos = z5_puts(line, STOP_CHARS, pos, "P");
     pos = z5_putdec(line, STOP_CHARS, pos, *(volatile u32 *)&s->phase);
@@ -2412,21 +2412,21 @@ int z5_main(z5_ctx *ctx)
         return 0;
 #endif
         if (hans) {
-            pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u"正常 类型");
+            pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u"цнгх╕╕ ч▒╗хЮЛ");
         } else {
             pos = z5_puts(line, TEXT_CHARS, pos, "OK T");
         }
         pos = z5_putdec(line, TEXT_CHARS, pos, c->type);
-        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u" 启动");
+        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u" хРпхКи");
         else pos = z5_puts(line, TEXT_CHARS, pos, " t");
         pos = z5_putdec(line, TEXT_CHARS, pos, c->start_ms);
         pos = z5_puts(line, TEXT_CHARS, pos, "+");
         pos = z5_putdec(line, TEXT_CHARS, pos, c->took_ms);
-        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u" 声");
+        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u" хг░");
         else pos = z5_puts(line, TEXT_CHARS, pos, " r");
         pos = z5_putdec(line, TEXT_CHARS, pos, c->reqs);
     } else {
-        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u"异常 D");
+        if (hans) pos = puts16(line, TEXT_CHARS, pos, (const u16 *)u"х╝Вх╕╕ D");
         else pos = z5_puts(line, TEXT_CHARS, pos, "ERR D");
         pos = z5_putdec(line, TEXT_CHARS, pos, c->dual);
         pos = z5_puts(line, TEXT_CHARS, pos, "E");
